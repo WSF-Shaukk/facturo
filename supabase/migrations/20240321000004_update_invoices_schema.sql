@@ -1,0 +1,14 @@
+-- Make pdf_url column nullable
+ALTER TABLE invoices
+ALTER COLUMN pdf_url DROP NOT NULL;
+
+-- Add missing columns to invoices table
+ALTER TABLE invoices
+ADD COLUMN IF NOT EXISTS invoice_number TEXT,
+ADD COLUMN IF NOT EXISTS date TEXT,
+ADD COLUMN IF NOT EXISTS client_name TEXT,
+ADD COLUMN IF NOT EXISTS items JSONB DEFAULT '[]'::jsonb,
+ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'FCFA',
+ADD COLUMN IF NOT EXISTS total DECIMAL(10,2) DEFAULT 0,
+ADD COLUMN IF NOT EXISTS notes TEXT,
+ADD COLUMN IF NOT EXISTS logo_url TEXT; 
