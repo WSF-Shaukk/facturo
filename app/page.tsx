@@ -1,17 +1,21 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { useLanguage } from "@/lib/i18n/language-context"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export default function Home() {
-  const { t, dir } = useLanguage()
+  const { t, dir } = useLanguage();
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-24" dir={dir}>
       <div className="max-w-3xl mx-auto text-center">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">{t.landing.title}</h1>
-        <p className="text-xl mb-8 text-gray-600">{t.landing.subtitle}</p>
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+          {t.landing.title}
+        </h1>
+        <p className="text-xl mb-8 text-muted-foreground">
+          {t.landing.subtitle}
+        </p>
         <div className="flex justify-center">
           <Link href="/invoice">
             <Button size="lg" className="text-lg px-8 py-6">
@@ -21,9 +25,15 @@ export default function Home() {
         </div>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">
-          <div className="p-6 border rounded-lg">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4 mx-auto">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div className="p-6 border rounded-lg bg-card">
+            <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4 mx-auto">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   d="M15.5 9H8.5C8.22386 9 8 9.22386 8 9.5C8 9.77614 8.22386 10 8.5 10H15.5C15.7761 10 16 9.77614 16 9.5C16 9.22386 15.7761 9 15.5 9Z"
                   fill="currentColor"
@@ -40,13 +50,23 @@ export default function Home() {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2 text-center">{t.landing.features.quick.title}</h3>
-            <p className="text-gray-600 text-center">{t.landing.features.quick.description}</p>
+            <h3 className="text-lg font-semibold mb-2">
+              {t.landing.features.quick.title}
+            </h3>
+            <p className="text-muted-foreground">
+              {t.landing.features.quick.description}
+            </p>
           </div>
 
-          <div className="p-6 border rounded-lg">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4 mx-auto">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div className="p-6 border rounded-lg bg-card">
+            <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4 mx-auto">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   fillRule="evenodd"
                   clipRule="evenodd"
@@ -56,13 +76,23 @@ export default function Home() {
                 <path d="M15 4L19 8H15V4Z" fill="currentColor" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2 text-center">{t.landing.features.professional.title}</h3>
-            <p className="text-gray-600 text-center">{t.landing.features.professional.description}</p>
+            <h3 className="text-lg font-semibold mb-2">
+              {t.landing.features.professional.title}
+            </h3>
+            <p className="text-muted-foreground">
+              {t.landing.features.professional.description}
+            </p>
           </div>
 
-          <div className="p-6 border rounded-lg">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4 mx-auto">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div className="p-6 border rounded-lg bg-card">
+            <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4 mx-auto">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   d="M14.8571 12C14.8571 13.578 13.578 14.8571 12 14.8571C10.422 14.8571 9.14286 13.578 9.14286 12C9.14286 10.422 10.422 9.14286 12 9.14286C13.578 9.14286 14.8571 10.422 14.8571 12Z"
                   fill="currentColor"
@@ -91,11 +121,15 @@ export default function Home() {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2 text-center">{t.landing.features.share.title}</h3>
-            <p className="text-gray-600 text-center">{t.landing.features.share.description}</p>
+            <h3 className="text-lg font-semibold mb-2">
+              {t.landing.features.share.title}
+            </h3>
+            <p className="text-muted-foreground">
+              {t.landing.features.share.description}
+            </p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,65 +1,80 @@
-export type Language = "en" | "fr" | "sw" | "ar"
+export type Language = "en" | "fr" | "sw" | "ar";
 
 export interface Translations {
-  direction: "ltr" | "rtl"
+  direction: "ltr" | "rtl";
   header: {
-    title: string
-  }
+    title: string;
+    pricing: string;
+    dashboard: string;
+    login: string;
+    signup: string;
+  };
+  dashboard: {
+    title: string;
+    signOut: string;
+    subscription: {
+      title: string;
+      currentPlan: string;
+      free: string;
+      pro: string;
+      upgradeToPro: string;
+    };
+  };
   landing: {
-    title: string
-    subtitle: string
-    cta: string
+    title: string;
+    subtitle: string;
+    cta: string;
     features: {
       quick: {
-        title: string
-        description: string
-      }
+        title: string;
+        description: string;
+      };
       professional: {
-        title: string
-        description: string
-      }
+        title: string;
+        description: string;
+      };
       share: {
-        title: string
-        description: string
-      }
-    }
-  }
+        title: string;
+        description: string;
+      };
+    };
+  };
   invoice: {
-    create: string
+    create: string;
     form: {
-      invoiceNumber: string
-      date: string
-      clientName: string
-      items: string
-      description: string
-      quantity: string
-      price: string
-      subtotal: string
-      addItem: string
-      removeItem: string
-      currency: string
-      total: string
-      notes: string
-      notesPlaceholder: string
-      generate: string
-      generating: string
-    }
+      invoiceNumber: string;
+      date: string;
+      clientName: string;
+      items: string;
+      description: string;
+      quantity: string;
+      price: string;
+      subtotal: string;
+      addItem: string;
+      removeItem: string;
+      currency: string;
+      total: string;
+      notes: string;
+      notesPlaceholder: string;
+      generate: string;
+      generating: string;
+    };
     preview: {
-      title: string
-      download: string
-      share: string
-      new: string
-      billTo: string
-      thankYou: string
-      generatedWith: string
-    }
-  }
+      title: string;
+      download: string;
+      share: string;
+      new: string;
+      billTo: string;
+      thankYou: string;
+      generatedWith: string;
+    };
+  };
   languages: {
-    en: string
-    fr: string
-    sw: string
-    ar: string
-  }
+    en: string;
+    fr: string;
+    sw: string;
+    ar: string;
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -67,10 +82,26 @@ export const translations: Record<Language, Translations> = {
     direction: "ltr",
     header: {
       title: "Facturo.africa",
+      pricing: "Pricing",
+      dashboard: "Dashboard",
+      login: "Login",
+      signup: "Sign Up",
+    },
+    dashboard: {
+      title: "Dashboard",
+      signOut: "Sign Out",
+      subscription: {
+        title: "Subscription Status",
+        currentPlan: "Current plan:",
+        free: "Free",
+        pro: "Pro",
+        upgradeToPro: "Upgrade to Pro",
+      },
     },
     landing: {
       title: "Generate a professional invoice in 1 minute",
-      subtitle: "Create, download, and share professional invoices instantly. No account required.",
+      subtitle:
+        "Create, download, and share professional invoices instantly. No account required.",
       cta: "Create Invoice",
       features: {
         quick: {
@@ -128,23 +159,42 @@ export const translations: Record<Language, Translations> = {
     direction: "ltr",
     header: {
       title: "Facturo.africa",
+      pricing: "Tarifs",
+      dashboard: "Tableau de bord",
+      login: "Connexion",
+      signup: "S'inscrire",
+    },
+    dashboard: {
+      title: "Tableau de bord",
+      signOut: "Déconnexion",
+      subscription: {
+        title: "Statut de l'abonnement",
+        currentPlan: "Plan actuel :",
+        free: "Gratuit",
+        pro: "Pro",
+        upgradeToPro: "Passer à Pro",
+      },
     },
     landing: {
       title: "Générez une facture professionnelle en 1 minute",
-      subtitle: "Créez, téléchargez et partagez des factures professionnelles instantanément. Aucun compte requis.",
+      subtitle:
+        "Créez, téléchargez et partagez des factures professionnelles instantanément. Aucun compte requis.",
       cta: "Créer une Facture",
       features: {
         quick: {
           title: "Rapide & Facile",
-          description: "Remplissez un formulaire simple et obtenez votre facture en quelques secondes",
+          description:
+            "Remplissez un formulaire simple et obtenez votre facture en quelques secondes",
         },
         professional: {
           title: "PDF Professionnel",
-          description: "Obtenez une facture propre et professionnelle prête à partager",
+          description:
+            "Obtenez une facture propre et professionnelle prête à partager",
         },
         share: {
           title: "Partagez Instantanément",
-          description: "Téléchargez ou partagez via WhatsApp en quelques secondes",
+          description:
+            "Téléchargez ou partagez via WhatsApp en quelques secondes",
         },
       },
     },
@@ -164,7 +214,8 @@ export const translations: Record<Language, Translations> = {
         currency: "Devise",
         total: "Total",
         notes: "Notes (Optionnel)",
-        notesPlaceholder: "Ajoutez des notes supplémentaires ou des instructions de paiement",
+        notesPlaceholder:
+          "Ajoutez des notes supplémentaires ou des instructions de paiement",
         generate: "Générer la Facture PDF",
         generating: "Génération de la Facture...",
       },
@@ -189,10 +240,26 @@ export const translations: Record<Language, Translations> = {
     direction: "ltr",
     header: {
       title: "Facturo.africa",
+      pricing: "Bei",
+      dashboard: "Dashibodi",
+      login: "Ingia",
+      signup: "Jisajili",
+    },
+    dashboard: {
+      title: "Dashibodi",
+      signOut: "Toka",
+      subscription: {
+        title: "Hali ya Usajili",
+        currentPlan: "Mpango wa sasa:",
+        free: "Bure",
+        pro: "Pro",
+        upgradeToPro: "Panda daraja hadi Pro",
+      },
     },
     landing: {
       title: "Tengeneza ankara ya kitaalamu kwa dakika 1",
-      subtitle: "Unda, pakua, na shiriki ankara za kitaalamu mara moja. Hakuna akaunti inayohitajika.",
+      subtitle:
+        "Unda, pakua, na shiriki ankara za kitaalamu mara moja. Hakuna akaunti inayohitajika.",
       cta: "Tengeneza Ankara",
       features: {
         quick: {
@@ -250,10 +317,26 @@ export const translations: Record<Language, Translations> = {
     direction: "rtl",
     header: {
       title: "فاكتورو.أفريكا",
+      pricing: "الأسعار",
+      dashboard: "لوحة التحكم",
+      login: "تسجيل الدخول",
+      signup: "إنشاء حساب",
+    },
+    dashboard: {
+      title: "لوحة التحكم",
+      signOut: "تسجيل الخروج",
+      subscription: {
+        title: "حالة الاشتراك",
+        currentPlan: "الخطة الحالية:",
+        free: "مجاني",
+        pro: "محترف",
+        upgradeToPro: "الترقية إلى محترف",
+      },
     },
     landing: {
       title: "إنشاء فاتورة احترافية في دقيقة واحدة",
-      subtitle: "إنشاء وتنزيل ومشاركة الفواتير الاحترافية على الفور. لا حساب مطلوب.",
+      subtitle:
+        "إنشاء وتنزيل ومشاركة الفواتير الاحترافية على الفور. لا حساب مطلوب.",
       cta: "إنشاء فاتورة",
       features: {
         quick: {
@@ -307,4 +390,4 @@ export const translations: Record<Language, Translations> = {
       ar: "العربية",
     },
   },
-}
+};

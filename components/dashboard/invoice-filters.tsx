@@ -1,0 +1,142 @@
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, X } from "lucide-react";
+
+interface InvoiceFiltersProps {
+  onFilterChange: (filters: {
+    search: string;
+    startDate: string;
+    endDate: string;
+    minAmount: string;
+    maxAmount: string;
+  }) => void;
+}
+
+export function InvoiceFilters({ onFilterChange }: InvoiceFiltersProps) {
+  const [search, setSearch] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [minAmount, setMinAmount] = useState("");
+  const [maxAmount, setMaxAmount] = useState("");
+
+  const handleSearch = () => {
+    onFilterChange({ search, startDate, endDate, minAmount, maxAmount });
+  };
+
+  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  const handleDateChange = (start: string, end: string) => {
+    setStartDate(start);
+    setEndDate(end);
+    onFilterChange({
+      search,
+      startDate: start,
+      endDate: end,
+      minAmount,
+      maxAmount,
+    });
+  };
+
+  const handleAmountChange = (min: string, max: string) => {
+    setMinAmount(min);
+    setMaxAmount(max);
+    onFilterChange({
+      search,
+      startDate,
+      endDate,
+      minAmount: min,
+      maxAmount: max,
+    });
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setStartDate("");
+    setEndDate("");
+    setMinAmount("");
+    setMaxAmount("");
+    onFilterChange({
+      search: "",
+      startDate: "",
+      endDate: "",
+      minAmount: "",
+      maxAmount: "",
+    });
+  };
+
+  return (
+    <div className="space-y-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4">
+        {/* Search with Button */}
+        <div className="flex gap-2 flex-1">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search by invoice number or client..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyPress={handleSearchKeyPress}
+              className="pl-9"
+            />
+          </div>
+          <Button onClick={handleSearch} className="shrink-0">
+            Search
+          </Button>
+        </div>
+
+        {/* Date Range */}
+        <div className="flex gap-2 flex-1">
+          <Input
+            type="date"
+            value={startDate}
+            onChange={(e) => handleDateChange(e.target.value, endDate)}
+            className="flex-1"
+          />
+          <span className="self-center">to</span>
+          <Input
+            type="date"
+            value={endDate}
+            onChange={(e) => handleDateChange(startDate, e.target.value)}
+            className="flex-1"
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4">
+        {/* Amount Range */}
+        <div className="flex gap-2 flex-1">
+          <Input
+            type="number"
+            placeholder="Min amount"
+            value={minAmount}
+            onChange={(e) => handleAmountChange(e.target.value, maxAmount)}
+            className="flex-1"
+          />
+          <span className="self-center">to</span>
+          <Input
+            type="number"
+            placeholder="Max amount"
+            value={maxAmount}
+            onChange={(e) => handleAmountChange(minAmount, e.target.value)}
+            className="flex-1"
+          />
+        </div>
+
+        {/* Clear Filters */}
+        <Button
+          variant="outline"
+          onClick={clearFilters}
+          className="flex items-center gap-2"
+        >
+          <X className="h-4 w-4" />
+          Clear Filters
+        </Button>
+      </div>
+    </div>
+  );
+}

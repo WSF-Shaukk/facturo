@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createBrowserClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface User {
   id: string;
@@ -19,12 +20,15 @@ interface SubscriptionStatusProps {
 export function SubscriptionStatus({ user }: SubscriptionStatusProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   // If no user data, show loading state
   if (!user) {
     return (
       <div className="rounded-lg border p-6">
-        <h2 className="text-xl font-semibold">Subscription Status</h2>
+        <h2 className="text-xl font-semibold">
+          {t.dashboard.subscription.title}
+        </h2>
         <div className="mt-4">
           <p className="text-sm text-muted-foreground">Loading...</p>
         </div>
@@ -105,11 +109,17 @@ export function SubscriptionStatus({ user }: SubscriptionStatusProps) {
 
   return (
     <div className="rounded-lg border p-6">
-      <h2 className="text-xl font-semibold">Subscription Status</h2>
+      <h2 className="text-xl font-semibold">
+        {t.dashboard.subscription.title}
+      </h2>
       <div className="mt-4">
         <p className="text-sm text-muted-foreground">
-          Current plan:{" "}
-          <span className="font-medium">{user.is_pro ? "Pro" : "Free"}</span>
+          {t.dashboard.subscription.currentPlan}{" "}
+          <span className="font-medium">
+            {user.is_pro
+              ? t.dashboard.subscription.pro
+              : t.dashboard.subscription.free}
+          </span>
         </p>
         {!user.is_pro && (
           <>
@@ -119,7 +129,7 @@ export function SubscriptionStatus({ user }: SubscriptionStatusProps) {
               disabled={isLoading}
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Upgrade to Pro
+              {t.dashboard.subscription.upgradeToPro}
             </Button>
             {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
           </>

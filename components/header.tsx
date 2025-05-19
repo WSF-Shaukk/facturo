@@ -6,6 +6,7 @@ import { createBrowserClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "@/components/language-selector";
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function Header() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export function Header() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const supabase = createBrowserClient();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const checkUser = async () => {
@@ -36,8 +38,6 @@ export function Header() {
     };
   }, [supabase.auth]);
 
-
-
   return (
     <header className="border-b py-4">
       <div className="container mx-auto px-4 flex justify-between items-center">
@@ -59,27 +59,29 @@ export function Header() {
               fill="currentColor"
             />
           </svg>
-          <span className="font-bold text-lg">Facturo.africa</span>
+          <span className="font-bold text-lg">{t.header.title}</span>
         </Link>
 
         <div className="flex items-center gap-4">
+          <Button variant="ghost" asChild>
+            <Link href="/pro">{t.header.pricing}</Link>
+          </Button>
           <LanguageSelector />
           {!isLoading && (
             <>
               {user ? (
                 <div className="flex items-center gap-4">
                   <Button variant="ghost" asChild>
-                    <Link href="/dashboard">Dashboard</Link>
+                    <Link href="/dashboard">{t.header.dashboard}</Link>
                   </Button>
-                  
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" asChild>
-                    <Link href="/login">Login</Link>
+                    <Link href="/login">{t.header.login}</Link>
                   </Button>
                   <Button asChild>
-                    <Link href="/signup">Sign Up</Link>
+                    <Link href="/signup">{t.header.signup}</Link>
                   </Button>
                 </div>
               )}
