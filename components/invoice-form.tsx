@@ -1,26 +1,33 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useForm, useFieldArray } from "react-hook-form"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { PlusCircle, Trash2 } from "lucide-react"
-import { v4 as uuidv4 } from "uuid"
-import type { InvoiceData } from "@/lib/types"
-import { formatDate } from "@/lib/utils"
-import { useLanguage } from "@/lib/i18n/language-context"
+import { useState, useEffect } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PlusCircle, Trash2 } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
+import type { InvoiceData } from "@/lib/types";
+import { formatDate } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface InvoiceFormProps {
-  onSubmit: (data: InvoiceData) => void
-  isSubmitting: boolean
+  onSubmit: (data: InvoiceData) => void;
+  isSubmitting: boolean;
 }
 
 export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
-  const { t, dir } = useLanguage()
-  const [total, setTotal] = useState<number>(0)
+  const { t, dir } = useLanguage();
+  const [total, setTotal] = useState<number>(0);
+  const [taxAmount, setTaxAmount] = useState<number>(0);
 
   const {
     register,
@@ -41,6 +48,7 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
           description: "",
           quantity: 1,
           price: 0,
+          tax: 0,
           subtotal: 0,
         },
       ],
@@ -48,74 +56,94 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
       total: 0,
       notes: "",
     },
-  })
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "lineItems",
-  })
+  });
 
   // Watch for changes to calculate total
-  const lineItems = watch("lineItems")
-  const currency = watch("currency")
+  const lineItems = watch("lineItems");
+  const currency = watch("currency");
 
   // Generate invoice number on first load
   useEffect(() => {
     // Get the last invoice number from localStorage
-    const lastInvoiceNumber = localStorage.getItem("lastInvoiceNumber")
-    let newInvoiceNumber = "FACT-001"
+    const lastInvoiceNumber = localStorage.getItem("lastInvoiceNumber");
+    let newInvoiceNumber = "FACT-001";
 
     if (lastInvoiceNumber) {
       // Extract the number part and increment
-      const match = lastInvoiceNumber.match(/FACT-(\d+)/)
+      const match = lastInvoiceNumber.match(/FACT-(\d+)/);
       if (match && match[1]) {
-        const num = Number.parseInt(match[1], 10)
-        newInvoiceNumber = `FACT-${String(num + 1).padStart(3, "0")}`
+        const num = Number.parseInt(match[1], 10);
+        newInvoiceNumber = `FACT-${String(num + 1).padStart(3, "0")}`;
       }
     }
 
-    setValue("invoiceNumber", newInvoiceNumber)
-  }, [setValue])
+    setValue("invoiceNumber", newInvoiceNumber);
+  }, [setValue]);
 
   // Calculate subtotals and total when line items change
   useEffect(() => {
-    let calculatedTotal = 0
+    let calculatedTotal = 0;
+    let calculatedTaxAmount = 0;
 
     lineItems.forEach((item, index) => {
       // Make sure we have valid numbers
-      const quantity = typeof item.quantity === "number" ? item.quantity : 0
-      const price = typeof item.price === "number" ? item.price : 0
+      const quantity = typeof item.quantity === "number" ? item.quantity : 0;
+      const price = typeof item.price === "number" ? item.price : 0;
+      const tax = typeof item.tax === "number" ? item.tax : 0;
 
-      // Calculate subtotal
-      const subtotal = quantity * price
+      // Calculate subtotal before tax
+      const subtotalBeforeTax = quantity * price;
+
+      // Calculate tax amount
+      const itemTaxAmount = (subtotalBeforeTax * tax) / 100;
+
+      // Calculate final subtotal with tax
+      const subtotal = subtotalBeforeTax + itemTaxAmount;
 
       // Update the subtotal in the form state
-      setValue(`lineItems.${index}.subtotal`, subtotal)
+      setValue(`lineItems.${index}.subtotal`, subtotal);
 
-      // Add to total
-      calculatedTotal += subtotal
-    })
+      // Add to totals
+      calculatedTotal += subtotal;
+      calculatedTaxAmount += itemTaxAmount;
+    });
 
-    // Update total
-    setTotal(calculatedTotal)
-    setValue("total", calculatedTotal)
-  }, [lineItems, setValue])
+    // Update totals
+    setTotal(calculatedTotal);
+    setTaxAmount(calculatedTaxAmount);
+    setValue("total", calculatedTotal);
+  }, [lineItems, setValue]);
 
   const calculateTotal = () => {
     // Get the current values of all line items
-    const currentLineItems = getValues("lineItems")
+    const currentLineItems = getValues("lineItems");
+    let calculatedTotal = 0;
+    let calculatedTaxAmount = 0;
 
     // Calculate the total from all valid subtotals
-    const calculatedTotal = currentLineItems.reduce((sum, item) => {
-      // Make sure we have valid numbers
-      const subtotal = typeof item.subtotal === "number" ? item.subtotal : 0
-      return sum + subtotal
-    }, 0)
+    currentLineItems.forEach((item) => {
+      const quantity = typeof item.quantity === "number" ? item.quantity : 0;
+      const price = typeof item.price === "number" ? item.price : 0;
+      const tax = typeof item.tax === "number" ? item.tax : 0;
 
-    // Update the total state and form value
-    setTotal(calculatedTotal)
-    setValue("total", calculatedTotal)
-  }
+      const subtotalBeforeTax = quantity * price;
+      const itemTaxAmount = (subtotalBeforeTax * tax) / 100;
+      const subtotal = subtotalBeforeTax + itemTaxAmount;
+
+      calculatedTotal += subtotal;
+      calculatedTaxAmount += itemTaxAmount;
+    });
+
+    // Update the totals
+    setTotal(calculatedTotal);
+    setTaxAmount(calculatedTaxAmount);
+    setValue("total", calculatedTotal);
+  };
 
   const addLineItem = () => {
     append({
@@ -123,46 +151,74 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
       description: "",
       quantity: 1,
       price: 0,
+      tax: 0,
       subtotal: 0,
-    })
+    });
 
     // Recalculate the total after adding a new item
-    // Use setTimeout to ensure the new item is in the form state
-    setTimeout(() => calculateTotal(), 0)
-  }
+    setTimeout(() => calculateTotal(), 0);
+  };
 
   const onFormSubmit = (data: InvoiceData) => {
     // Save the invoice number for next time
-    localStorage.setItem("lastInvoiceNumber", data.invoiceNumber)
-    onSubmit(data)
-  }
+    localStorage.setItem("lastInvoiceNumber", data.invoiceNumber);
+    onSubmit(data);
+  };
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6" dir={dir}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="invoiceNumber">{t.invoice.form.invoiceNumber}</Label>
-          <Input id="invoiceNumber" {...register("invoiceNumber", { required: true })} />
-          {errors.invoiceNumber && <p className="text-red-500 text-sm">{t.invoice.form.invoiceNumber} is required</p>}
+          <Input
+            id="invoiceNumber"
+            {...register("invoiceNumber", { required: true })}
+          />
+          {errors.invoiceNumber && (
+            <p className="text-red-500 text-sm">
+              {t.invoice.form.invoiceNumber} is required
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="date">{t.invoice.form.date}</Label>
-          <Input id="date" type="date" {...register("date", { required: true })} />
-          {errors.date && <p className="text-red-500 text-sm">{t.invoice.form.date} is required</p>}
+          <Input
+            id="date"
+            type="date"
+            {...register("date", { required: true })}
+          />
+          {errors.date && (
+            <p className="text-red-500 text-sm">
+              {t.invoice.form.date} is required
+            </p>
+          )}
         </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="clientName">{t.invoice.form.clientName}</Label>
-        <Input id="clientName" {...register("clientName", { required: true })} />
-        {errors.clientName && <p className="text-red-500 text-sm">{t.invoice.form.clientName} is required</p>}
+        <Input
+          id="clientName"
+          {...register("clientName", { required: true })}
+        />
+        {errors.clientName && (
+          <p className="text-red-500 text-sm">
+            {t.invoice.form.clientName} is required
+          </p>
+        )}
       </div>
 
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <Label>{t.invoice.form.items}</Label>
-          <Button type="button" variant="outline" size="sm" onClick={addLineItem} className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={addLineItem}
+            className="flex items-center gap-1"
+          >
             <PlusCircle className="h-4 w-4" />
             <span>{t.invoice.form.addItem}</span>
           </Button>
@@ -172,19 +228,27 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
           {fields.map((field, index) => (
             <div key={field.id} className="p-4 border rounded-lg space-y-4">
               <div className="space-y-2">
-                <Label htmlFor={`lineItems.${index}.description`}>{t.invoice.form.description}</Label>
+                <Label htmlFor={`lineItems.${index}.description`}>
+                  {t.invoice.form.description}
+                </Label>
                 <Textarea
                   id={`lineItems.${index}.description`}
-                  {...register(`lineItems.${index}.description` as const, { required: true })}
+                  {...register(`lineItems.${index}.description` as const, {
+                    required: true,
+                  })}
                 />
                 {errors.lineItems?.[index]?.description && (
-                  <p className="text-red-500 text-sm">{t.invoice.form.description} is required</p>
+                  <p className="text-red-500 text-sm">
+                    {t.invoice.form.description} is required
+                  </p>
                 )}
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-4 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor={`lineItems.${index}.quantity`}>{t.invoice.form.quantity}</Label>
+                  <Label htmlFor={`lineItems.${index}.quantity`}>
+                    {t.invoice.form.quantity}
+                  </Label>
                   <Input
                     id={`lineItems.${index}.quantity`}
                     type="number"
@@ -195,24 +259,29 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
                       valueAsNumber: true,
                       min: 1,
                       onChange: (e) => {
-                        // Force immediate re-calculation when input changes
-                        const currentValue = Number.parseFloat(e.target.value) || 0
-                        const price = lineItems[index]?.price || 0
-                        const subtotal = currentValue * price
-                        setValue(`lineItems.${index}.subtotal`, subtotal)
-
-                        // Recalculate the total
-                        calculateTotal()
+                        const currentValue =
+                          Number.parseFloat(e.target.value) || 0;
+                        const price = lineItems[index]?.price || 0;
+                        const tax = lineItems[index]?.tax || 0;
+                        const subtotalBeforeTax = currentValue * price;
+                        const taxAmount = (subtotalBeforeTax * tax) / 100;
+                        const subtotal = subtotalBeforeTax + taxAmount;
+                        setValue(`lineItems.${index}.subtotal`, subtotal);
+                        calculateTotal();
                       },
                     })}
                   />
                   {errors.lineItems?.[index]?.quantity && (
-                    <p className="text-red-500 text-sm">Valid {t.invoice.form.quantity} is required</p>
+                    <p className="text-red-500 text-sm">
+                      Valid {t.invoice.form.quantity} is required
+                    </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor={`lineItems.${index}.price`}>{t.invoice.form.price}</Label>
+                  <Label htmlFor={`lineItems.${index}.price`}>
+                    {t.invoice.form.price}
+                  </Label>
                   <Input
                     id={`lineItems.${index}.price`}
                     type="number"
@@ -223,19 +292,54 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
                       valueAsNumber: true,
                       min: 0,
                       onChange: (e) => {
-                        // Force immediate re-calculation when input changes
-                        const currentValue = Number.parseFloat(e.target.value) || 0
-                        const quantity = lineItems[index]?.quantity || 0
-                        const subtotal = quantity * currentValue
-                        setValue(`lineItems.${index}.subtotal`, subtotal)
-
-                        // Recalculate the total
-                        calculateTotal()
+                        const currentValue =
+                          Number.parseFloat(e.target.value) || 0;
+                        const quantity = lineItems[index]?.quantity || 0;
+                        const tax = lineItems[index]?.tax || 0;
+                        const subtotalBeforeTax = quantity * currentValue;
+                        const taxAmount = (subtotalBeforeTax * tax) / 100;
+                        const subtotal = subtotalBeforeTax + taxAmount;
+                        setValue(`lineItems.${index}.subtotal`, subtotal);
+                        calculateTotal();
                       },
                     })}
                   />
                   {errors.lineItems?.[index]?.price && (
-                    <p className="text-red-500 text-sm">Valid {t.invoice.form.price} is required</p>
+                    <p className="text-red-500 text-sm">
+                      Valid {t.invoice.form.price} is required
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`lineItems.${index}.tax`}>Tax %</Label>
+                  <Input
+                    id={`lineItems.${index}.tax`}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    {...register(`lineItems.${index}.tax` as const, {
+                      required: true,
+                      valueAsNumber: true,
+                      min: 0,
+                      onChange: (e) => {
+                        const currentValue =
+                          Number.parseFloat(e.target.value) || 0;
+                        const quantity = lineItems[index]?.quantity || 0;
+                        const price = lineItems[index]?.price || 0;
+                        const subtotalBeforeTax = quantity * price;
+                        const taxAmount =
+                          (subtotalBeforeTax * currentValue) / 100;
+                        const subtotal = subtotalBeforeTax + taxAmount;
+                        setValue(`lineItems.${index}.subtotal`, subtotal);
+                        calculateTotal();
+                      },
+                    })}
+                  />
+                  {errors.lineItems?.[index]?.tax && (
+                    <p className="text-red-500 text-sm">
+                      Valid tax percentage is required
+                    </p>
                   )}
                 </div>
 
@@ -253,9 +357,8 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    remove(index)
-                    // Recalculate the total after removing an item
-                    setTimeout(() => calculateTotal(), 0)
+                    remove(index);
+                    setTimeout(() => calculateTotal(), 0);
                   }}
                   className="text-red-500 hover:text-red-700 hover:bg-red-50 flex items-center gap-1"
                 >
@@ -270,7 +373,10 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="currency">{t.invoice.form.currency}</Label>
-        <Select defaultValue="FCFA" onValueChange={(value) => setValue("currency", value)}>
+        <Select
+          defaultValue="FCFA"
+          onValueChange={(value) => setValue("currency", value)}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select currency" />
           </SelectTrigger>
@@ -284,7 +390,13 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
         </Select>
       </div>
 
-      <div className="p-4 bg-gray-50 rounded-lg border">
+      <div className="p-4 bg-gray-50 rounded-lg border space-y-2">
+        <div className="flex justify-between items-center">
+          <span className="font-medium">Tax Amount:</span>
+          <span className="text-lg">
+            {currency} {taxAmount.toFixed(2)}
+          </span>
+        </div>
         <div className="flex justify-between items-center">
           <span className="font-medium">{t.invoice.form.total}:</span>
           <span className="text-xl font-bold">
@@ -295,12 +407,16 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="notes">{t.invoice.form.notes}</Label>
-        <Textarea id="notes" {...register("notes")} placeholder={t.invoice.form.notesPlaceholder} />
+        <Textarea
+          id="notes"
+          {...register("notes")}
+          placeholder={t.invoice.form.notesPlaceholder}
+        />
       </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? t.invoice.form.generating : t.invoice.form.generate}
       </Button>
     </form>
-  )
+  );
 }
