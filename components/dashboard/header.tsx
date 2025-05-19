@@ -23,7 +23,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
   }
 
   return (
-    <header className="flex items-center justify-between pb-6 border-b mb-6">
+    <header className="flex items-center justify-between pb-6 border-b mb-6 overflow-y-scroll">
       <div>
         <h1 className="text-2xl font-bold">{t.dashboard.title}</h1>
         <p className="text-sm text-muted-foreground">{user.email}</p>

@@ -7,12 +7,15 @@ import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "@/components/language-selector";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { Menu, X } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export function Header() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const supabase = createBrowserClient();
   const { t } = useLanguage();
 
@@ -38,6 +41,35 @@ export function Header() {
     };
   }, [supabase.auth]);
 
+  const NavItems = () => (
+    <>
+      <Button variant="ghost" asChild>
+        <Link href="/pro">{t.header.pricing}</Link>
+      </Button>
+      <LanguageSelector />
+      {!isLoading && (
+        <>
+          {user ? (
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" asChild>
+                <Link href="/dashboard">{t.header.dashboard}</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" asChild>
+                <Link href="/login">{t.header.login}</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/signup">{t.header.signup}</Link>
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+    </>
+  );
+
   return (
     <header className="border-b py-4">
       <div className="container mx-auto px-4 flex justify-between items-center">
@@ -62,32 +94,24 @@ export function Header() {
           <span className="font-bold text-lg">{t.header.title}</span>
         </Link>
 
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" asChild>
-            <Link href="/pro">{t.header.pricing}</Link>
-          </Button>
-          <LanguageSelector />
-          {!isLoading && (
-            <>
-              {user ? (
-                <div className="flex items-center gap-4">
-                  <Button variant="ghost" asChild>
-                    <Link href="/dashboard">{t.header.dashboard}</Link>
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" asChild>
-                    <Link href="/login">{t.header.login}</Link>
-                  </Button>
-                  <Button asChild>
-                    <Link href="/signup">{t.header.signup}</Link>
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-4">
+          <NavItems />
         </div>
+
+        {/* Mobile Navigation */}
+        <Sheet>
+          <SheetTrigger asChild className="md:hidden">
+            <Button variant="ghost" size="icon">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent>
+            <div className="flex flex-col gap-4 mt-8">
+              <NavItems />
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </header>
   );

@@ -71,63 +71,81 @@ export function InvoiceFilters({ onFilterChange }: InvoiceFiltersProps) {
 
   return (
     <div className="space-y-4 mb-6">
+      {/* Search with Button */}
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search by invoice number or client..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyPress={handleSearchKeyPress}
+            className="pl-9"
+          />
+        </div>
+        <Button onClick={handleSearch} className="shrink-0">
+          Search
+        </Button>
+      </div>
+
+      {/* Date Range */}
       <div className="flex flex-col sm:flex-row gap-4">
-        {/* Search with Button */}
         <div className="flex gap-2 flex-1">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <div className="flex-1">
+            <label className="text-sm text-muted-foreground mb-1 block">
+              From
+            </label>
             <Input
-              placeholder="Search by invoice number or client..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyPress={handleSearchKeyPress}
-              className="pl-9"
+              type="date"
+              value={startDate}
+              onChange={(e) => handleDateChange(e.target.value, endDate)}
+              className="w-full"
             />
           </div>
-          <Button onClick={handleSearch} className="shrink-0">
-            Search
-          </Button>
+          <div className="flex-1">
+            <label className="text-sm text-muted-foreground mb-1 block">
+              To
+            </label>
+            <Input
+              type="date"
+              value={endDate}
+              onChange={(e) => handleDateChange(startDate, e.target.value)}
+              className="w-full"
+            />
+          </div>
         </div>
 
-        {/* Date Range */}
+        {/* Amount Range */}
         <div className="flex gap-2 flex-1">
-          <Input
-            type="date"
-            value={startDate}
-            onChange={(e) => handleDateChange(e.target.value, endDate)}
-            className="flex-1"
-          />
-          <span className="self-center">to</span>
-          <Input
-            type="date"
-            value={endDate}
-            onChange={(e) => handleDateChange(startDate, e.target.value)}
-            className="flex-1"
-          />
+          <div className="flex-1">
+            <label className="text-sm text-muted-foreground mb-1 block">
+              Min Amount
+            </label>
+            <Input
+              type="number"
+              placeholder="0"
+              value={minAmount}
+              onChange={(e) => handleAmountChange(e.target.value, maxAmount)}
+              className="w-full"
+            />
+          </div>
+          <div className="flex-1">
+            <label className="text-sm text-muted-foreground mb-1 block">
+              Max Amount
+            </label>
+            <Input
+              type="number"
+              placeholder="0"
+              value={maxAmount}
+              onChange={(e) => handleAmountChange(minAmount, e.target.value)}
+              className="w-full"
+            />
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4">
-        {/* Amount Range */}
-        <div className="flex gap-2 flex-1">
-          <Input
-            type="number"
-            placeholder="Min amount"
-            value={minAmount}
-            onChange={(e) => handleAmountChange(e.target.value, maxAmount)}
-            className="flex-1"
-          />
-          <span className="self-center">to</span>
-          <Input
-            type="number"
-            placeholder="Max amount"
-            value={maxAmount}
-            onChange={(e) => handleAmountChange(minAmount, e.target.value)}
-            className="flex-1"
-          />
-        </div>
-
-        {/* Clear Filters */}
+      {/* Clear Filters */}
+      <div className="flex justify-end">
         <Button
           variant="outline"
           onClick={clearFilters}

@@ -96,8 +96,8 @@ export function InvoiceList({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 overflow-x-auto">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-xl font-semibold">Your History</h2>
         {canCreateInvoice ? (
           <Link href="/invoice">
@@ -133,8 +133,8 @@ export function InvoiceList({
       <InvoiceFilters onFilterChange={setFilters} />
 
       {filteredInvoices.length > 0 ? (
-        <div className="border rounded-lg overflow-hidden">
-          <table className="w-full">
+        <div className="border rounded-lg overflow-x-auto">
+          <table className="w-full min-w-[640px]">
             <thead>
               <tr className="border-b bg-muted/50">
                 <th className="p-4 text-left whitespace-nowrap">
