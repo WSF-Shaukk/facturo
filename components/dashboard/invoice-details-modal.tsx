@@ -12,6 +12,7 @@ interface LineItem {
   quantity: number;
   price: number;
   subtotal: number;
+  tax?: number;
 }
 
 interface Invoice {
@@ -94,6 +95,35 @@ export function InvoiceDetailsModal({
                       </td>
                     </tr>
                   ))}
+                  <tr className="border-t bg-muted/30">
+                    <td colSpan={3} className="p-2 text-right font-semibold">
+                      Subtotal:
+                    </td>
+                    <td className="p-2 text-right font-semibold">
+                      {invoice.currency}{" "}
+                      {invoice.lineItems
+                        .reduce(
+                          (sum, item) => sum + item.quantity * item.price,
+                          0
+                        )
+                        .toFixed(2)}
+                    </td>
+                  </tr>
+                  <tr className="border-t bg-muted/30">
+                    <td colSpan={3} className="p-2 text-right font-semibold">
+                      Tax:
+                    </td>
+                    <td className="p-2 text-right font-semibold">
+                      {invoice.currency}{" "}
+                      {invoice.lineItems
+                        .reduce((sum, item) => {
+                          const subtotal = item.quantity * item.price;
+                          const taxAmount = (subtotal * (item.tax || 0)) / 100;
+                          return sum + taxAmount;
+                        }, 0)
+                        .toFixed(2)}
+                    </td>
+                  </tr>
                   <tr className="border-t bg-muted/30">
                     <td colSpan={3} className="p-2 text-right font-semibold">
                       Total:

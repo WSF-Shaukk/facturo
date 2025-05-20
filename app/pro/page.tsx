@@ -1,13 +1,67 @@
-"use client"
+"use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createBrowserClient } from "@/lib/supabase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// Currency conversion rates (you should update these regularly or use an API)
+const EXCHANGE_RATES = {
+  USD: 1,
+  EUR: 0.92,
+  KES: 130.5,
+  NGN: 1300,
+  GHS: 12.5,
+  UGX: 3800,
+  TZS: 2500,
+  RWF: 1300,
+  FCFA: 600,
+};
+
+// Currency symbols and formatting
+const CURRENCY_FORMAT = {
+  USD: { symbol: "$", position: "before" },
+  EUR: { symbol: "€", position: "before" },
+  KES: { symbol: "KSh", position: "before" },
+  NGN: { symbol: "₦", position: "before" },
+  GHS: { symbol: "GH₵", position: "before" },
+  UGX: { symbol: "USh", position: "before" },
+  TZS: { symbol: "TSh", position: "before" },
+  RWF: { symbol: "RF", position: "before" },
+  FCFA: { symbol: "CFA", position: "before" },
+};
 
 export default function ProPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState("USD");
+  const [convertedPrice, setConvertedPrice] = useState(3.99);
+
+  // Convert price when currency changes
+  useEffect(() => {
+    const basePrice = 3.99; // Base price in USD
+    const rate =
+      EXCHANGE_RATES[selectedCurrency as keyof typeof EXCHANGE_RATES] || 1;
+    const converted = basePrice * rate;
+    setConvertedPrice(Number(converted.toFixed(2)));
+  }, [selectedCurrency]);
+
+  // Format price with currency symbol
+  const formatPrice = (price: number, currency: string) => {
+    const format = CURRENCY_FORMAT[currency as keyof typeof CURRENCY_FORMAT];
+    if (!format) return `${price}`;
+
+    return format.position === "before"
+      ? `${format.symbol}${price}`
+      : `${price}${format.symbol}`;
+  };
 
   async function handleUpgrade() {
     if (!process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID) {
@@ -106,11 +160,30 @@ export default function ProPage() {
           Get more features to grow your business
         </p>
 
+        <div className="flex justify-center mb-8">
+          <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Select currency" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="USD">$ (USD)</SelectItem>
+              <SelectItem value="EUR">€ (EUR)</SelectItem>
+              <SelectItem value="KES">KES (Kenyan Shilling)</SelectItem>
+              <SelectItem value="NGN">NGN (Nigerian Naira)</SelectItem>
+              <SelectItem value="GHS">GHS (Ghanaian Cedi)</SelectItem>
+              <SelectItem value="UGX">UGX (Ugandan Shilling)</SelectItem>
+              <SelectItem value="TZS">TZS (Tanzanian Shilling)</SelectItem>
+              <SelectItem value="RWF">RWF (Rwandan Franc)</SelectItem>
+              <SelectItem value="FCFA">FCFA (Franc CFA)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-8">
           <div className="border rounded-lg p-6 text-left bg-card">
             <h2 className="text-xl font-bold mb-4">Free</h2>
             <p className="text-3xl font-bold mb-6">
-              $0{" "}
+              {formatPrice(0, selectedCurrency)}{" "}
               <span className="text-base font-normal text-muted-foreground">
                 /month
               </span>
@@ -144,7 +217,7 @@ export default function ProPage() {
             </div>
             <h2 className="text-xl font-bold mb-4">Pro</h2>
             <p className="text-3xl font-bold mb-6">
-              $3.99{" "}
+              {formatPrice(convertedPrice, selectedCurrency)}{" "}
               <span className="text-base font-normal text-muted-foreground">
                 /month
               </span>

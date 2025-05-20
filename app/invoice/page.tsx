@@ -43,6 +43,13 @@ export default function InvoicePage() {
   const generateUniqueInvoiceNumber = async (userId: string) => {
     const supabase = createBrowserClient();
 
+    // Get user data to check pro status and client number
+    const { data: userData } = await supabase
+      .from("users")
+      .select("is_pro, client_number")
+      .eq("id", userId)
+      .single();
+
     // Get the latest invoice number for this user
     const { data: latestInvoice } = await supabase
       .from("invoices")
@@ -53,14 +60,32 @@ export default function InvoicePage() {
 
     let newNumber = 1;
     if (latestInvoice && latestInvoice.length > 0) {
-      // Extract the number from the latest invoice number
-      const match = latestInvoice[0].invoice_number.match(/FACT-(\d+)/);
-      if (match && match[1]) {
-        newNumber = parseInt(match[1], 10) + 1;
+      if (userData?.is_pro) {
+        // For pro users, extract the last number after the last hyphen
+        const match = latestInvoice[0].invoice_number.match(/-(\d+)$/);
+        if (match && match[1]) {
+          newNumber = parseInt(match[1], 10) + 1;
+        }
+      } else {
+        // For free users, keep the existing logic
+        const match = latestInvoice[0].invoice_number.match(/FACT-(\d+)/);
+        if (match && match[1]) {
+          newNumber = parseInt(match[1], 10) + 1;
+        }
       }
     }
 
-    return `FACT-${String(newNumber).padStart(3, "0")}`;
+    if (userData?.is_pro) {
+      // Format: COMPANY-DATE-CLIENTNUMBER-INVOICENUMBER
+      const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+      const clientNumber = userData.client_number || "1";
+      return `${
+        userData.company_name || "COMPANY"
+      }-${today}-${clientNumber}-${newNumber}`;
+    } else {
+      // Free user format remains the same
+      return `FACT-${String(newNumber).padStart(3, "0")}`;
+    }
   };
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,12 +162,22 @@ export default function InvoicePage() {
         // Generate a unique invoice number
         const uniqueInvoiceNumber = await generateUniqueInvoiceNumber(user.id);
 
-        // Save to database with all form fields
+        // Map form data to database schema
         const invoiceData = {
           user_id: user.id,
           invoice_number: uniqueInvoiceNumber,
           date: data.date,
           client_name: data.clientName,
+          business_name: data.businessName,
+          business_address: data.businessAddress,
+          business_phone: data.businessPhone,
+          business_email: data.businessEmail,
+          business_tin: data.businessTin,
+          business_rc_number: data.businessRcNumber,
+          vat_rate: data.vatRate,
+          prices_include_vat: data.pricesIncludeVat,
+          payment_terms: data.paymentTerms,
+          payment_terms_custom: data.paymentTermsCustom,
           items: data.lineItems,
           currency: data.currency,
           total: data.total,

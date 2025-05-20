@@ -9,85 +9,99 @@ interface InvoicePDFProps {
 }
 
 export function InvoicePDF({ data }: InvoicePDFProps) {
-  const { t, dir } = useLanguage();
+  const { t } = useLanguage();
+  const subtotal = data.lineItems.reduce(
+    (sum, item) => sum + item.quantity * item.price,
+    0
+  );
+  const taxAmount = data.lineItems.reduce((sum, item) => sum + item.tax, 0);
+  const total = data.total;
+  const showVat = data.vatRate > 0;
+  const paymentTerms =
+    data.paymentTerms === "custom"
+      ? data.paymentTermsCustom
+      : data.paymentTerms;
 
   return (
-    <div className="font-sans text-black" dir={dir}>
-      {/* Header */}
-      <div className="flex justify-between items-start mb-8">
-        <div>
-          {data.logo_url ? (
-            <div className="mb-2">
-              <Image
-                src={data.logo_url}
-                alt="Invoice Logo"
-                width={150}
-                height={75}
-                className="object-contain"
-              />
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M7 18H17V16H7V18Z" fill="currentColor" />
-                <path d="M17 14H7V12H17V14Z" fill="currentColor" />
-                <path d="M7 10H11V8H7V10Z" fill="currentColor" />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M6 2C4.34315 2 3 3.34315 3 5V19C3 20.6569 4.34315 22 6 22H18C19.6569 22 21 20.6569 21 19V5C21 3.34315 19.6569 2 18 2H6ZM5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V19C19 19.5523 18.5523 20 18 20H6C5.44772 20 5 19.5523 5 19V5Z"
-                  fill="currentColor"
-                />
-              </svg>
-              <h1 className="text-2xl font-bold">Facturo.africa</h1>
+    <div className="p-8 bg-[#18191A] shadow-lg max-w-4xl mx-auto text-white font-sans">
+      {/* Header: Business & Client Info */}
+      <div className="flex flex-col md:flex-row justify-between gap-8  pb-6 mb-1">
+        {/* Business Info */}
+        <div className="space-y-2 text-sm">
+          <div className="text-xl font-bold mb-1">{data.businessName}</div>
+          <div>Professional Invoices</div>
+          {data.businessRcNumber && (
+            <div>
+              <span className="font-medium">RC Number:</span>{" "}
+              <span className="">{data.businessRcNumber}</span>
             </div>
           )}
-          <p className="text-gray-500 mt-1">Professional Invoices</p>
+          {data.businessTin && (
+            <div>
+              <span className="font-medium">TIN</span>: <span className="">{data.businessTin}</span>
+            </div>
+          )}
+          {data.businessAddress && <div><span className="font-medium">Address:</span> {data.businessAddress}</div>}
+          {data.businessPhone && (
+            <div>
+              <span className="font-medium">Phone:</span> <span className="">{data.businessPhone}</span>
+            </div>
+          )}
+          {data.businessEmail && (
+            <div>
+              <span className="font-medium">Email:</span>{" "}
+              <span className="">{data.businessEmail}</span>
+            </div>
+          )}
         </div>
-        <div className="text-right">
-          <h2 className="text-xl font-bold">INVOICE</h2>
-          <p className="font-medium">{data.invoiceNumber}</p>
-          <p className="text-gray-500 mt-1">
-            {t.invoice.form.date}: {data.date}
-          </p>
+        {/* Client Info */}
+        <div className="space-y-2 text-sm md:text-left">
+          <div className="font-bold text-base mb-1">Bill To:</div>
+          <div>{data.clientName}</div>
+          {data.clientAddress && <div>{data.clientAddress}</div>}
+          {data.clientTin && (
+            <div>
+              <span className="font-medium">TIN:</span> <span >{data.clientTin}</span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Client Info */}
-      <div className="mb-8">
-        <h3 className="text-gray-500 font-medium mb-2">
-          {t.invoice.preview.billTo}
-        </h3>
-        <p className="font-bold text-lg">{data.clientName}</p>
+      {/* Invoice Info */}
+      <div className="mb-6">
+        <div className="font-bold text-lg">INVOICE</div>
+        <div className="flex flex-col gap-2 mt-1 text-sm">
+          <div>
+            Invoice Number:{" "}
+            <span className="font-medium">{data.invoiceNumber}</span>
+          </div>
+          <div>
+            Date: <span className="font-medium">{data.date}</span>
+          </div>
+        </div>
       </div>
 
-      {/* Invoice Items */}
-      <div className="mb-8">
-        <table className="w-full">
+      {/* Table */}
+      <div className="overflow-x-auto mb-6 mt-10">
+        <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-300">
-              <th className="text-left py-2">{t.invoice.form.description}</th>
-              <th className="text-right py-2">{t.invoice.form.quantity}</th>
-              <th className="text-right py-2">{t.invoice.form.price}</th>
-              <th className="text-right py-2">{t.invoice.form.subtotal}</th>
+            <tr className="border-b border-gray-700">
+              <th className="text-left py-2 font-semibold">Description</th>
+              <th className="text-center py-2 font-semibold">Quantity</th>
+              <th className="text-center py-2 font-semibold">Unit Price</th>
+              <th className="text-right py-2 font-semibold">Amount</th>
             </tr>
           </thead>
           <tbody>
-            {data.lineItems.map((item) => (
-              <tr key={item.id}>
-                <td className="py-4">{item.description}</td>
-                <td className="text-right py-4">{item.quantity}</td>
-                <td className="text-right py-4">
+            {data.lineItems.map((item, idx) => (
+              <tr key={idx} className="border-b border-gray-800">
+                <td className="py-2">{item.description}</td>
+                <td className="py-2 text-center">{item.quantity}</td>
+                <td className="py-2 text-center">
                   {data.currency} {item.price.toFixed(2)}
                 </td>
-                <td className="text-right py-4 font-medium">
-                  {data.currency} {item.subtotal.toFixed(2)}
+                <td className="py-2 text-right">
+                  {data.currency} {(item.quantity * item.price).toFixed(2)}
                 </td>
               </tr>
             ))}
@@ -95,38 +109,55 @@ export function InvoicePDF({ data }: InvoicePDFProps) {
         </table>
       </div>
 
-      {/* Total */}
-      <div className="flex justify-end mb-8">
-        <div className="w-1/2">
-          <div className="flex justify-between py-2 border-b border-gray-300">
-            <span>{t.invoice.form.subtotal}:</span>
-            <span>
-              {data.currency} {data.total.toFixed(2)}
-            </span>
-          </div>
-          <div className="flex justify-between py-2 font-bold text-lg">
-            <span>{t.invoice.form.total}:</span>
-            <span>
-              {data.currency} {data.total.toFixed(2)}
-            </span>
+      {/* Totals */}
+      <div className="mb-6 text-sm space-y-1">
+        <div className="flex justify-end">
+          <div className="w-full max-w-xs space-y-1">
+            <div className="flex justify-between">
+              <span>Subtotal (HT):</span>
+              <span>
+                {data.currency} {subtotal.toFixed(2)}
+              </span>
+            </div>
+            {showVat && (
+              <div className="flex justify-between">
+                <span>VAT ({data.vatRate}%):</span>
+                <span>
+                  {data.currency} {taxAmount.toFixed(2)}
+                </span>
+              </div>
+            )}
+            <div className="flex justify-between font-bold mt-2">
+              <span>Total (TTC):</span>
+              <span>
+                {data.currency} {total.toFixed(2)}
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Notes */}
-      {data.notes && (
-        <div className="mb-8">
-          <h3 className="text-gray-500 font-medium mb-2">
-            {t.invoice.form.notes}:
-          </h3>
-          <p className="text-gray-700">{data.notes}</p>
+      {/* VAT & Payment Terms Info */}
+      <div className="mb-8 space-y-2">
+        <div className="flex items-center gap-2">
+          <span className="inline-block text-lg">
+            {data.pricesIncludeVat ? "ⓘ" : ""}
+          </span>
+          <span>
+            Prices are VAT {data.pricesIncludeVat ? "inclusive" : "exclusive"} (
+            {data.vatRate}%)
+          </span>
         </div>
-      )}
+        <div className="flex items-center gap-2">
+          <span className="inline-block text-lg">☑</span>
+          <span>Payment Terms: {paymentTerms}</span>
+        </div>
+      </div>
 
       {/* Footer */}
-      <div className="text-center text-gray-500 text-sm mt-12">
-        <p>{t.invoice.preview.thankYou}</p>
-        <p>{t.invoice.preview.generatedWith}</p>
+      <div className="text-center text-gray-300 text-sm mt-12 space-y-1">
+        <div className="font-semibold">Thank you for your business!</div>
+        <div>Generated with Facturo.africa</div>
       </div>
     </div>
   );

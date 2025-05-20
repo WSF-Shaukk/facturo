@@ -42,6 +42,15 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
       invoiceNumber: "",
       date: formatDate(new Date().toISOString()),
       clientName: "",
+      clientAddress: "",
+      businessName: "",
+      businessAddress: "",
+      businessTin: "",
+      businessRcNumber: "",
+      vatRate: 7.5,
+      pricesIncludeVat: false,
+      paymentTerms: "Due on Receipt",
+      paymentTermsCustom: "",
       lineItems: [
         {
           id: uuidv4(),
@@ -66,23 +75,17 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
   // Watch for changes to calculate total
   const lineItems = watch("lineItems");
   const currency = watch("currency");
+  const invoiceNumber = watch("invoiceNumber");
+  const vatRate = watch("vatRate");
+  const pricesIncludeVat = watch("pricesIncludeVat");
 
   // Generate invoice number on first load
   useEffect(() => {
     // Get the last invoice number from localStorage
     const lastInvoiceNumber = localStorage.getItem("lastInvoiceNumber");
-    let newInvoiceNumber = "FACT-001";
-
     if (lastInvoiceNumber) {
-      // Extract the number part and increment
-      const match = lastInvoiceNumber.match(/FACT-(\d+)/);
-      if (match && match[1]) {
-        const num = Number.parseInt(match[1], 10);
-        newInvoiceNumber = `FACT-${String(num + 1).padStart(3, "0")}`;
-      }
+      setValue("invoiceNumber", lastInvoiceNumber);
     }
-
-    setValue("invoiceNumber", newInvoiceNumber);
   }, [setValue]);
 
   // Calculate subtotals and total when line items change
@@ -91,22 +94,23 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
     let calculatedTaxAmount = 0;
 
     lineItems.forEach((item, index) => {
-      // Make sure we have valid numbers
       const quantity = typeof item.quantity === "number" ? item.quantity : 0;
       const price = typeof item.price === "number" ? item.price : 0;
-      const tax = typeof item.tax === "number" ? item.tax : 0;
 
       // Calculate subtotal before tax
       const subtotalBeforeTax = quantity * price;
 
-      // Calculate tax amount
-      const itemTaxAmount = (subtotalBeforeTax * tax) / 100;
+      // Calculate tax amount based on VAT rate
+      const itemTaxAmount = (subtotalBeforeTax * vatRate) / 100;
 
-      // Calculate final subtotal with tax
-      const subtotal = subtotalBeforeTax + itemTaxAmount;
+      // Calculate final subtotal
+      const subtotal = pricesIncludeVat
+        ? subtotalBeforeTax
+        : subtotalBeforeTax + itemTaxAmount;
 
       // Update the subtotal in the form state
       setValue(`lineItems.${index}.subtotal`, subtotal);
+      setValue(`lineItems.${index}.tax`, itemTaxAmount);
 
       // Add to totals
       calculatedTotal += subtotal;
@@ -117,7 +121,7 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
     setTotal(calculatedTotal);
     setTaxAmount(calculatedTaxAmount);
     setValue("total", calculatedTotal);
-  }, [lineItems, setValue]);
+  }, [lineItems, vatRate, pricesIncludeVat, setValue]);
 
   const calculateTotal = () => {
     // Get the current values of all line items
@@ -167,18 +171,225 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6" dir={dir}>
+      {/* Business Details Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Business Details</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="businessName">Business Name</Label>
+            <Input
+              id="businessName"
+              {...register("businessName", { required: true })}
+            />
+            {errors.businessName && (
+              <p className="text-red-500 text-sm">This field is required</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="businessAddress">Business Address</Label>
+            <Textarea
+              id="businessAddress"
+              {...register("businessAddress", { required: true })}
+            />
+            {errors.businessAddress && (
+              <p className="text-red-500 text-sm">This field is required</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="businessPhone">Business Phone</Label>
+            <Input
+              id="businessPhone"
+              type="tel"
+              {...register("businessPhone")}
+              placeholder="+1234567890"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="businessEmail">Business Email</Label>
+            <Input
+              id="businessEmail"
+              type="email"
+              {...register("businessEmail")}
+              placeholder="business@example.com"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="businessTin">Tax Identification Number (TIN)</Label>
+            <Input
+              id="businessTin"
+              {...register("businessTin", {
+                pattern: /^[0-9]{8,14}(-[0-9]{4})?$/,
+                maxLength: 15,
+              })}
+              placeholder="e.g., 01234567-0001"
+            />
+            {errors.businessTin && (
+              <p className="text-red-500 text-sm">
+                Invalid TIN format (e.g., 01234567-0001)
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="businessRcNumber">
+              Company Registration Number (RC)
+            </Label>
+            <Input
+              id="businessRcNumber"
+              {...register("businessRcNumber", {
+                pattern: /^(RC)?[0-9]{1,15}$/,
+                maxLength: 15,
+              })}
+              placeholder="e.g., RC1234567"
+            />
+            {errors.businessRcNumber && (
+              <p className="text-red-500 text-sm">
+                Invalid RC Number format (e.g., RC1234567)
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Client Details Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Client Details</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="clientName">{t.invoice.form.clientName}</Label>
+            <Input
+              id="clientName"
+              {...register("clientName", { required: true })}
+            />
+            {errors.clientName && (
+              <p className="text-red-500 text-sm">This field is required</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="clientAddress">Client Address</Label>
+            <Textarea id="clientAddress" {...register("clientAddress")} />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="clientTin">Client TIN</Label>
+            <Input
+              id="clientTin"
+              {...register("clientTin", {
+                pattern: /^[0-9]{8,14}(-[0-9]{4})?$/,
+                maxLength: 15,
+              })}
+              placeholder="e.g., 01234567-0001"
+            />
+            {errors.clientTin && (
+              <p className="text-red-500 text-sm">
+                Invalid TIN format (e.g., 01234567-0001)
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* VAT Settings */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">VAT Settings</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="vatRate">VAT Rate (%)</Label>
+            <Input
+              id="vatRate"
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              {...register("vatRate", {
+                required: true,
+                min: 0,
+                max: 100,
+                valueAsNumber: true,
+              })}
+            />
+            {errors.vatRate && (
+              <p className="text-red-500 text-sm">
+                VAT rate must be between 0 and 100
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Prices Include VAT</Label>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="pricesIncludeVat"
+                {...register("pricesIncludeVat")}
+                className="h-4 w-4"
+              />
+              <Label htmlFor="pricesIncludeVat" className="text-sm">
+                Check if prices already include VAT
+              </Label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Payment Terms */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Payment Terms</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="paymentTerms">Payment Terms</Label>
+            <Select
+              defaultValue="Due on Receipt"
+              onValueChange={(value) => {
+                setValue("paymentTerms", value);
+                if (value !== "custom") {
+                  setValue("paymentTermsCustom", "");
+                }
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select payment terms" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Due on Receipt">Due on Receipt</SelectItem>
+                <SelectItem value="Net 7">Net 7</SelectItem>
+                <SelectItem value="Net 15">Net 15</SelectItem>
+                <SelectItem value="Net 30">Net 30</SelectItem>
+                <SelectItem value="Cash">Cash</SelectItem>
+                <SelectItem value="custom">Custom</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {watch("paymentTerms") === "custom" && (
+            <div className="space-y-2">
+              <Label htmlFor="paymentTermsCustom">Custom Payment Terms</Label>
+              <Input
+                id="paymentTermsCustom"
+                {...register("paymentTermsCustom", {
+                  required: watch("paymentTerms") === "custom",
+                })}
+              />
+              {errors.paymentTermsCustom && (
+                <p className="text-red-500 text-sm">This field is required</p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Existing Invoice Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="invoiceNumber">{t.invoice.form.invoiceNumber}</Label>
-          <Input
-            id="invoiceNumber"
-            {...register("invoiceNumber", { required: true })}
-          />
-          {errors.invoiceNumber && (
-            <p className="text-red-500 text-sm">
-              {t.invoice.form.invoiceNumber} is required
-            </p>
-          )}
+          <Label>{t.invoice.form.invoiceNumber}</Label>
+          <div className="h-10 px-3 py-2 rounded-md border border-input bg-muted flex items-center">
+            {invoiceNumber || t.invoice.form.generating}
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -189,24 +400,9 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
             {...register("date", { required: true })}
           />
           {errors.date && (
-            <p className="text-red-500 text-sm">
-              {t.invoice.form.date} is required
-            </p>
+            <p className="text-red-500 text-sm">{t.invoice.form.required}</p>
           )}
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="clientName">{t.invoice.form.clientName}</Label>
-        <Input
-          id="clientName"
-          {...register("clientName", { required: true })}
-        />
-        {errors.clientName && (
-          <p className="text-red-500 text-sm">
-            {t.invoice.form.clientName} is required
-          </p>
-        )}
       </div>
 
       <div className="space-y-4">
