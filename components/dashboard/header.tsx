@@ -28,7 +28,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
         <h1 className="text-2xl font-bold">{t.dashboard.title}</h1>
         <p className="text-sm text-muted-foreground">{user.email}</p>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center  gap-4">
         <ThemeToggle />
         <Button onClick={handleSignOut} variant="outline">
           {t.dashboard.signOut}

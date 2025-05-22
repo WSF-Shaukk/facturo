@@ -230,7 +230,7 @@ export default function ProPage() {
               </li>
               <li className="flex items-start">
                 <CheckIcon className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
-                <span>Pdf Download</span>
+                <span>PDF Download</span>
               </li>
               <li className="flex items-start">
                 <CheckIcon className="h-5 w-5 text-green-500 mr-2 mt-0.5" />

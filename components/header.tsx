@@ -50,13 +50,13 @@ export function Header() {
       {!isLoading && (
         <>
           {user ? (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center justify-center gap-4">
               <Button variant="ghost" asChild>
                 <Link href="/dashboard">{t.header.dashboard}</Link>
               </Button>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <Button variant="ghost" asChild>
                 <Link href="/login">{t.header.login}</Link>
               </Button>
@@ -107,7 +107,7 @@ export function Header() {
             </Button>
           </SheetTrigger>
           <SheetContent>
-            <div className="flex flex-col gap-4 mt-8">
+            <div className="flex flex-col gap-4 mt-8 ">
               <NavItems />
             </div>
           </SheetContent>

@@ -168,7 +168,6 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
     localStorage.setItem("lastInvoiceNumber", data.invoiceNumber);
     onSubmit(data);
   };
-
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6" dir={dir}>
       {/* Business Details Section */}
@@ -221,17 +220,9 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
             <Label htmlFor="businessTin">Tax Identification Number (TIN)</Label>
             <Input
               id="businessTin"
-              {...register("businessTin", {
-                pattern: /^[0-9]{8,14}(-[0-9]{4})?$/,
-                maxLength: 15,
-              })}
+              {...register("businessTin")}
               placeholder="e.g., 01234567-0001"
             />
-            {errors.businessTin && (
-              <p className="text-red-500 text-sm">
-                Invalid TIN format (e.g., 01234567-0001)
-              </p>
-            )}
           </div>
 
           <div className="space-y-2">
@@ -279,60 +270,9 @@ export function InvoiceForm({ onSubmit, isSubmitting }: InvoiceFormProps) {
             <Label htmlFor="clientTin">Client TIN</Label>
             <Input
               id="clientTin"
-              {...register("clientTin", {
-                pattern: /^[0-9]{8,14}(-[0-9]{4})?$/,
-                maxLength: 15,
-              })}
+              {...register("clientTin")}
               placeholder="e.g., 01234567-0001"
             />
-            {errors.clientTin && (
-              <p className="text-red-500 text-sm">
-                Invalid TIN format (e.g., 01234567-0001)
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* VAT Settings */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">VAT Settings</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="vatRate">VAT Rate (%)</Label>
-            <Input
-              id="vatRate"
-              type="number"
-              min="0"
-              max="100"
-              step="0.1"
-              {...register("vatRate", {
-                required: true,
-                min: 0,
-                max: 100,
-                valueAsNumber: true,
-              })}
-            />
-            {errors.vatRate && (
-              <p className="text-red-500 text-sm">
-                VAT rate must be between 0 and 100
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label>Prices Include VAT</Label>
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="pricesIncludeVat"
-                {...register("pricesIncludeVat")}
-                className="h-4 w-4"
-              />
-              <Label htmlFor="pricesIncludeVat" className="text-sm">
-                Check if prices already include VAT
-              </Label>
-            </div>
           </div>
         </div>
       </div>

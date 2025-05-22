@@ -18,16 +18,6 @@ DROP CONSTRAINT IF EXISTS valid_tin_format,
 DROP CONSTRAINT IF EXISTS valid_rc_number_format,
 DROP CONSTRAINT IF EXISTS valid_vat_rate;
 
--- Add validation for TIN format
-ALTER TABLE invoices
-ADD CONSTRAINT valid_tin_format 
-CHECK (business_tin IS NULL OR business_tin ~ '^[0-9]{8,14}(-[0-9]{4})?$');
-
--- Add validation for RC number format
-ALTER TABLE invoices
-ADD CONSTRAINT valid_rc_number_format 
-CHECK (business_rc_number IS NULL OR business_rc_number ~ '^(RC)?[0-9]{1,15}$');
-
 -- Add validation for VAT rate
 ALTER TABLE invoices
 ADD CONSTRAINT valid_vat_rate 
