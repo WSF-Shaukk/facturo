@@ -11,6 +11,7 @@ export interface InvoiceData {
   invoiceNumber: string;
   date: string;
   clientName: string;
+  clientAddress?: string;
   clientTin?: string;
   businessName: string;
   businessAddress: string;

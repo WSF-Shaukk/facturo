@@ -98,7 +98,7 @@ export default function PreviewPage() {
 
   return (
     <div className="container mx-auto px-4 py-8" dir={dir}>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">{t.invoice.preview.title}</h1>
 
         <div className="mb-6 bg-white p-6 border rounded-lg shadow-sm" ref={pdfRef}>
