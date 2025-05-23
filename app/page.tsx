@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/language-context";
+import Image from "next/image";
 
 export default function Home() {
   const { t, dir } = useLanguage();
@@ -127,6 +128,107 @@ export default function Home() {
             <p className="text-muted-foreground">
               {t.landing.features.share.description}
             </p>
+          </div>
+        </div>
+
+        <div className="mt-10">
+          <h1 className="text-[41px] font-bold">Why use facturo.africa?</h1>
+          <h3 className="text-[26px] font-bold mt-5">⚡ Fast & Simple</h3>
+          <p className="text-[18px] mt-4">
+            Fill a short form in seconds and download your invoice instantly.
+          </p>
+          <div
+            className="relative flex  justify-center items-center mt-[4rem] w-[250px]    mx-auto "
+            style={{ minHeight: 300 }}
+          >
+            <Image
+              src="/screen2.svg"
+              alt="Invoice Preview"
+              width={1000}
+              height={1000}
+              className=" absolute top-0 left-0 -translate-x-9 -translate-y-9 rounded-xl shadow-lg  "
+              style={{ zIndex: 0 }}
+            />
+            <Image
+              src="/screen1.svg"
+              alt="Invoice Form"
+              width={1000}
+              height={1000}
+              className="relative rounded-xl shadow-2xl  "
+              style={{ zIndex: 10 }}
+            />
+          </div>
+          {/* BUTTONS */}
+          <div className="flex text-white mt-[3rem] gap-4 text-sm whitespace-nowrap max-w-[400px] mx-auto">
+            <div className="bg-[#18181b] w-full py-2 rounded-sm">
+              Download PDF
+            </div>
+            <div className="bg-[#18181b] w-full py-2 rounded-sm">
+              Share via WhatsApp
+            </div>
+          </div>
+          {/* INSTANTLY */}
+          <Image
+            className="w-[300px] mx-auto mt-10"
+            src="/instantly.png"
+            alt="Instantly"
+            width={500}
+            height={500}
+          />
+          {/* MOBILE FIRST */}
+          <div className="mt-10 space-y-5">
+            <h3 className="text-[26px] font-bold">📲 Mobile-First</h3>
+            <p className="text-[18px]">
+              Designed for African micro-entrepreneurs. No laptop needed.
+            </p>
+            <div className="relative max-w-[350px] mx-auto">
+              <Image
+                src="/mapofafrica.png"
+                alt="Mobile"
+                width={500}
+                height={500}
+              />
+              <Image
+                className="absolute top-0 left-0 -translate-x-[5rem] translate-y-[5rem]"
+                src="/phonewithscreen.png"
+                alt="Mobile"
+                width={500}
+                height={500}
+              />
+            </div>
+          </div>
+          {/* START NOW */}
+          <div className="mt-[7rem]">
+            <h3 className="text-[41px] font-bold">
+              Start now — it's completely free.
+            </h3>
+            <div className="flex justify-center mt-5">
+              <Link href="/invoice">
+                <Button size="lg" className="text-lg px-8 py-6">
+                  {t.landing.cta}
+                </Button>
+              </Link>
+            </div>
+          </div>
+          {/* WANT MORE POWER */}
+          <div className="mt-16">
+            <h3 className="text-[41px] font-bold">
+              Want more power? Upgrade to Pro.
+            </h3>
+            <ul className="text-[18px] mt-10 flex flex-col gap-10 font-medium">
+              <li className="flex flex-col items-center gap-2">
+                <Image className="w-[109px] " src="/history.png" alt="history" width={100} height={100} />
+                <p>Access all your past invoices</p>
+              </li>
+              <li className="flex flex-col items-center gap-2">
+                <Image className="w-[151px] " src="/download.png" alt="download" width={100} height={100} />
+                <p>Add your business logo</p>
+              </li>
+              <li className="flex flex-col items-center gap-2">
+                <Image className="w-[191px] " src="/infinity.png" alt="infinity" width={100} height={100} />
+                <p>Unlimited invoices</p>
+              </li>
+            </ul>
           </div>
         </div>
       </div>

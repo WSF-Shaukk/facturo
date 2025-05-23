@@ -43,6 +43,11 @@ export function Header() {
 
   const NavItems = () => (
     <>
+      {user && (
+        <Button variant="default" asChild>
+          <Link href="/invoice">Create</Link>
+        </Button>
+      )}
       <Button variant="ghost" asChild>
         <Link href="/pro">{t.header.pricing}</Link>
       </Button>

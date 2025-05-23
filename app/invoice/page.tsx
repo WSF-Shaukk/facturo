@@ -46,7 +46,7 @@ export default function InvoicePage() {
     // Get user data to check pro status and client number
     const { data: userData } = await supabase
       .from("users")
-      .select("is_pro, client_number")
+      .select("is_pro, client_number, company_name")
       .eq("id", userId)
       .single();
 
@@ -76,12 +76,11 @@ export default function InvoicePage() {
     }
 
     if (userData?.is_pro) {
-      // Format: COMPANY-DATE-CLIENTNUMBER-INVOICENUMBER
+      // Format: USERNAME-DATE-CLIENTNUMBER-INVOICENUMBER
       const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
       const clientNumber = userData.client_number || "1";
-      return `${
-        userData.company_name || "COMPANY"
-      }-${today}-${clientNumber}-${newNumber}`;
+      const companyName = userData.company_name?.toUpperCase() || "COMPANY";
+      return `${companyName}-${today}-${clientNumber}-${newNumber}`;
     } else {
       // Free user format remains the same
       return `FACT-${String(newNumber).padStart(3, "0")}`;
@@ -136,12 +135,14 @@ export default function InvoicePage() {
         logo_url: logoUrl,
       };
 
+      let uniqueInvoiceNumber: string;
+
       // If user is logged in, save to their account
       if (user) {
         // Get user data to check pro status
         const { data: userData } = await supabase
           .from("users")
-          .select("is_pro")
+          .select("is_pro, company_name, client_number")
           .eq("id", user.id)
           .single();
 
@@ -159,8 +160,8 @@ export default function InvoicePage() {
           );
         }
 
-        // Generate a unique invoice number
-        const uniqueInvoiceNumber = await generateUniqueInvoiceNumber(user.id);
+        // Generate a unique invoice number for logged-in user
+        uniqueInvoiceNumber = await generateUniqueInvoiceNumber(user.id);
 
         // Map form data to database schema
         const invoiceData = {
@@ -195,10 +196,17 @@ export default function InvoicePage() {
           console.error("Supabase save error:", saveError);
           throw saveError;
         }
-
-        // Update the invoice data with the new invoice number for preview
-        invoiceDataWithLogo.invoiceNumber = uniqueInvoiceNumber;
+      } else {
+        // For guest users, generate a temporary invoice number
+        const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+        const randomNum = Math.floor(Math.random() * 1000)
+          .toString()
+          .padStart(3, "0");
+        uniqueInvoiceNumber = `GUEST-${today}-${randomNum}`;
       }
+
+      // Update the invoice data with the new invoice number for preview
+      invoiceDataWithLogo.invoiceNumber = uniqueInvoiceNumber;
 
       // Store the invoice data in localStorage for preview
       localStorage.setItem("invoiceData", JSON.stringify(invoiceDataWithLogo));

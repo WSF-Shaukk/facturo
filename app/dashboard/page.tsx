@@ -48,10 +48,21 @@ export default async function DashboardPage() {
     invoiceNumber: invoice.invoice_number,
     date: invoice.date,
     clientName: invoice.client_name,
+    businessName: invoice.business_name,
+    businessAddress: invoice.business_address,
+    businessPhone: invoice.business_phone,
+    businessEmail: invoice.business_email,
+    businessTin: invoice.business_tin,
+    businessRcNumber: invoice.business_rc_number,
+    vatRate: invoice.vat_rate,
+    pricesIncludeVat: invoice.prices_include_vat,
+    paymentTerms: invoice.payment_terms,
+    paymentTermsCustom: invoice.payment_terms_custom,
     lineItems: invoice.items || [],
     currency: invoice.currency || "FCFA",
     total: invoice.total || 0,
     notes: invoice.notes,
+    logo_url: invoice.logo_url,
   }));
 
   return (

@@ -260,7 +260,7 @@ export default function ProPage() {
 
         <p className="mt-8 text-muted-foreground">
           Need more features?{" "}
-          <Link href="#" className="text-primary hover:underline">
+          <Link href="mailto:facturoafrica@gmail.com" className="text-primary hover:underline">
             Contact us
           </Link>{" "}
           for enterprise plans.

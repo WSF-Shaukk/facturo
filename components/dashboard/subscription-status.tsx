@@ -107,12 +107,49 @@ export function SubscriptionStatus({ user }: SubscriptionStatusProps) {
     }
   }
 
+  async function handleUnsubscribe() {
+    if (!user?.stripe_customer_id) {
+      setError("No active subscription found");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await fetch("/api/stripe/cancel-subscription", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customerId: user.stripe_customer_id,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to cancel subscription");
+      }
+
+      // Reload the page to show updated status
+      window.location.reload();
+    } catch (error) {
+      console.error("Unsubscribe error:", error);
+      setError(
+        error instanceof Error ? error.message : "Failed to cancel subscription"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="rounded-lg border p-6">
       <h2 className="text-xl font-semibold">
         {t.dashboard.subscription.title}
       </h2>
-      <div className="mt-4">
+      <div className="mt-4 flex justify-between">
         <p className="text-sm text-muted-foreground">
           {t.dashboard.subscription.currentPlan}{" "}
           <span className="font-medium">
@@ -121,19 +158,23 @@ export function SubscriptionStatus({ user }: SubscriptionStatusProps) {
               : t.dashboard.subscription.free}
           </span>
         </p>
-        {!user.is_pro && (
-          <>
-            <Button
-              onClick={handleUpgrade}
-              className="mt-4"
-              disabled={isLoading}
-            >
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t.dashboard.subscription.upgradeToPro}
-            </Button>
-            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
-          </>
+        {user.is_pro ? (
+          <button
+            onClick={handleUnsubscribe}
+            className="text-sm underline text-[#CACACA]"
+            
+            disabled={isLoading}
+          >
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Unsubscribe
+          </button>
+        ) : (
+          <Button onClick={handleUpgrade} className="mt-4" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t.dashboard.subscription.upgradeToPro}
+          </Button>
         )}
+        {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
       </div>
     </div>
   );
