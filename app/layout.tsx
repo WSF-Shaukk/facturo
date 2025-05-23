@@ -45,11 +45,12 @@ export default function RootLayout({
             <div className="min-h-screen flex flex-col">
               <Header />
               <main className="flex-1">{children}</main>
-              <footer className="border-t py-4 text-center text-sm ">
-                <div className=" mx-auto px-10">
-                  <div className="md:flex justify-between items-center">
-                    <div className="lg:flex items-center gap-5 hidden">
-                      <Link href="/" className="flex items-center gap-2">
+              <footer className="border-t py-12 text-sm bg-gray-50">
+                <div className="container mx-auto px-4 md:px-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    {/* Logo and Description Section */}
+                    <div className="lg:col-span-4">
+                      <Link href="/" className="flex items-center gap-2 mb-4">
                         <svg
                           width="24"
                           height="24"
@@ -67,89 +68,131 @@ export default function RootLayout({
                             fill="currentColor"
                           />
                         </svg>
-                        <span className="font-bold text-lg">
+                        <span className="font-bold text-xl">
                           Facturo.africa
                         </span>
                       </Link>
-                      <span className="text-sm">Built for African entrepreneurs — fast, mobile, and professional invoicing.</span>
+                      <p className="text-gray-600 max-w-md">
+                        Built for African entrepreneurs — fast, mobile, and
+                        professional invoicing.
+                      </p>
                     </div>
-                    <div className="flex flex-col md:flex-row gap-10 justify-between ">
-                      <div>
-                        <p className="font-semibold">Pages</p>
-                        <ul className="space-y-2 mt-2">
-                          <li>
-                            <Link href="/" className="hover:underline">
-                              Home
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="/invoice" className="hover:underline">
-                              Create Invoice
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="/pro" className="hover:underline">
-                              Pricing
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="/privacy" className="hover:underline">
-                              Privacy Policy
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="/terms" className="hover:underline">
-                              Terms of Use
-                            </Link>
-                          </li>
-                        </ul>
-                      </div>
-                      {/* need help */}
-                      <div>
-                        <p className="font-semibold mt-10 md:mt-0">
-                          Need Help?
-                        </p>
-                        <ul className="space-y-2 mt-2">
-                          <li className="flex flex-col">
-                            <span>WhatsApp Support</span>
-                            <span className="text-[#FF0000]">
-                              +234 8 127 697 879
-                            </span>
-                          </li>
-                          <li className="flex flex-col">
-                            <span>Mail Support</span>
-                            <Link
-                              target="_blank"
-                              href="mailto:facturoafrica@gmail.com"
-                            >
-                              <span className="text-[#FF0000]">
+
+                    {/* Navigation Links Section */}
+                    <div className="lg:col-span-8">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {/* Pages Section */}
+                        <div>
+                          <h3 className="font-semibold text-base mb-4">
+                            Pages
+                          </h3>
+                          <ul className="space-y-3">
+                            <li>
+                              <Link
+                                href="/"
+                                className="text-gray-600 hover:text-gray-900 transition-colors"
+                              >
+                                Home
+                              </Link>
+                            </li>
+                            <li>
+                              <Link
+                                href="/invoice"
+                                className="text-gray-600 hover:text-gray-900 transition-colors"
+                              >
+                                Create Invoice
+                              </Link>
+                            </li>
+                            <li>
+                              <Link
+                                href="/pro"
+                                className="text-gray-600 hover:text-gray-900 transition-colors"
+                              >
+                                Pricing
+                              </Link>
+                            </li>
+                            <li>
+                              <Link
+                                href="/privacy"
+                                className="text-gray-600 hover:text-gray-900 transition-colors"
+                              >
+                                Privacy Policy
+                              </Link>
+                            </li>
+                            <li>
+                              <Link
+                                href="/terms"
+                                className="text-gray-600 hover:text-gray-900 transition-colors"
+                              >
+                                Terms of Use
+                              </Link>
+                            </li>
+                          </ul>
+                        </div>
+
+                        {/* Support Section */}
+                        <div>
+                          <h3 className="font-semibold text-base mb-4">
+                            Need Help?
+                          </h3>
+                          <ul className="space-y-4">
+                            <li>
+                              <p className="text-gray-600 mb-1">
+                                WhatsApp Support
+                              </p>
+                              <a
+                                href="https://wa.me/2348127697879"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-red-600 hover:text-red-700 transition-colors"
+                              >
+                                +234 8 127 697 879
+                              </a>
+                            </li>
+                            <li>
+                              <p className="text-gray-600 mb-1">Mail Support</p>
+                              <a
+                                href="mailto:facturoafrica@gmail.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-red-600 hover:text-red-700 transition-colors"
+                              >
                                 facturoafrica@gmail.com
-                              </span>
-                            </Link>
-                          </li>
-                        </ul>
-                      </div>
-                      {/* follow us */}
-                      <div>
-                        <p className="font-semibold mt-10 md:mt-0">Follow us</p>
-                        <div className="mt-2">
-                          <p>Facebook</p>
-                          <Link
-                            target="_blank"
-                            href="https://www.facebook.com/profile.php?id=100067040096310"
-                          >
-                            <span className="text-[#FF0000]">
-                              https://www.facebook.com/profile.php?id=100067040096310
-                            </span>
-                          </Link>
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+
+                        {/* Social Media Section */}
+                        <div>
+                          <h3 className="font-semibold text-base mb-4">
+                            Follow us
+                          </h3>
+                          <div className="space-y-4">
+                            <div>
+                              <p className="text-gray-600 mb-1">Facebook</p>
+                              <a
+                                href="https://www.facebook.com/profile.php?id=100067040096310"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-red-600 hover:text-red-700 transition-colors break-all"
+                              >
+                                facebook.com/facturoafrica
+                              </a>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                    <p className="text-gray-500 mt-16">
+
+                  {/* Copyright Section */}
+                  <div className="border-t mt-12 pt-8">
+                    <p className="text-gray-500 text-center">
                       © {new Date().getFullYear()} Facturo.africa. All rights
                       reserved.
                     </p>
+                  </div>
                 </div>
               </footer>
             </div>

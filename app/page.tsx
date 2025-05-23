@@ -131,50 +131,59 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-10">
+        <div className="mt-10 relative">
           <h1 className="text-[41px] font-bold">Why use facturo.africa?</h1>
           <h3 className="text-[26px] font-bold mt-5">⚡ Fast & Simple</h3>
           <p className="text-[18px] mt-4">
             Fill a short form in seconds and download your invoice instantly.
           </p>
-          <div
-            className="relative flex  justify-center items-center mt-[4rem] w-[250px]    mx-auto "
-            style={{ minHeight: 300 }}
-          >
+          <div className="md:flex items-center">
+            <div
+              className="relative flex  justify-center items-center mt-[4rem] w-[250px]    mx-auto "
+              style={{ minHeight: 300 }}
+            >
+              <Image
+                src="/screen2.svg"
+                alt="Invoice Preview"
+                width={1000}
+                height={1000}
+                className=" absolute top-0 left-0 -translate-x-9 -translate-y-9 rounded-xl shadow-lg  "
+                style={{ zIndex: 0 }}
+              />
+              <Image
+                src="/screen1.svg"
+                alt="Invoice Form"
+                width={1000}
+                height={1000}
+                className="relative rounded-xl shadow-2xl  "
+                style={{ zIndex: 10 }}
+              />
+            </div>
+            {/* BUTTONS */}
+            <div className="flex text-white mt-[3rem] gap-4 text-sm whitespace-nowrap max-w-[400px] mx-auto md:w-[400px]">
+              <div className="bg-[#18181b] w-full py-2 rounded-sm">
+                Download PDF
+              </div>
+              <div className="bg-[#18181b] w-full py-2 rounded-sm">
+                Share via WhatsApp
+              </div>
+            </div>
+            {/* INSTANTLY */}
             <Image
-              src="/screen2.svg"
-              alt="Invoice Preview"
-              width={1000}
-              height={1000}
-              className=" absolute top-0 left-0 -translate-x-9 -translate-y-9 rounded-xl shadow-lg  "
-              style={{ zIndex: 0 }}
+              src="/arrow.png"
+              alt="arrow"
+              width={100}
+              height={100}
+              className="absolute hidden md:block right-[8rem] translate-y-[6rem]"
             />
             <Image
-              src="/screen1.svg"
-              alt="Invoice Form"
-              width={1000}
-              height={1000}
-              className="relative rounded-xl shadow-2xl  "
-              style={{ zIndex: 10 }}
+              className="w-[300px] mx-auto mt-10 md:absolute -right-[5rem] md:w-[200px] translate-y-[5rem]"
+              src="/instantly.png"
+              alt="Instantly"
+              width={500}
+              height={500}
             />
           </div>
-          {/* BUTTONS */}
-          <div className="flex text-white mt-[3rem] gap-4 text-sm whitespace-nowrap max-w-[400px] mx-auto">
-            <div className="bg-[#18181b] w-full py-2 rounded-sm">
-              Download PDF
-            </div>
-            <div className="bg-[#18181b] w-full py-2 rounded-sm">
-              Share via WhatsApp
-            </div>
-          </div>
-          {/* INSTANTLY */}
-          <Image
-            className="w-[300px] mx-auto mt-10"
-            src="/instantly.png"
-            alt="Instantly"
-            width={500}
-            height={500}
-          />
           {/* MOBILE FIRST */}
           <div className="mt-10 space-y-5">
             <h3 className="text-[26px] font-bold">📲 Mobile-First</h3>
@@ -202,7 +211,7 @@ export default function Home() {
             <h3 className="text-[41px] font-bold">
               Start now — it's completely free.
             </h3>
-            <div className="flex justify-center mt-5">
+            <div className="flex justify-center mt-5 md:mt-10">
               <Link href="/invoice">
                 <Button size="lg" className="text-lg px-8 py-6">
                   {t.landing.cta}
@@ -212,21 +221,45 @@ export default function Home() {
           </div>
           {/* WANT MORE POWER */}
           <div className="mt-16">
-            <h3 className="text-[41px] font-bold">
+            <h3 className="text-[32px] font-bold">
               Want more power? Upgrade to Pro.
             </h3>
-            <ul className="text-[18px] mt-10 flex flex-col gap-10 font-medium">
-              <li className="flex flex-col items-center gap-2">
-                <Image className="w-[109px] " src="/history.png" alt="history" width={100} height={100} />
-                <p>Access all your past invoices</p>
+            <ul className="text-[18px] mt-10 flex flex-col gap-10 font-medium md:flex-row md:items-start md:justify-center">
+              <li className="flex flex-col items-center gap-2 md:w-[200px]">
+                <div className="w-[191px] h-[191px] flex items-center justify-center">
+                  <Image
+                    className="w-full h-full object-contain"
+                    src="/history.png"
+                    alt="history"
+                    width={191}
+                    height={191}
+                  />
+                </div>
+                <p className="text-center">Access all your past invoices</p>
               </li>
-              <li className="flex flex-col items-center gap-2">
-                <Image className="w-[151px] " src="/download.png" alt="download" width={100} height={100} />
-                <p>Add your business logo</p>
+              <li className="flex flex-col items-center gap-2 md:w-[200px]">
+                <div className="w-[191px] h-[191px] flex items-center justify-center">
+                  <Image
+                    className="w-full h-full object-contain"
+                    src="/download.png"
+                    alt="download"
+                    width={191}
+                    height={191}
+                  />
+                </div>
+                <p className="text-center">Add your business logo</p>
               </li>
-              <li className="flex flex-col items-center gap-2">
-                <Image className="w-[191px] " src="/infinity.png" alt="infinity" width={100} height={100} />
-                <p>Unlimited invoices</p>
+              <li className="flex flex-col items-center gap-2 md:w-[200px]">
+                <div className="w-[191px] h-[191px] flex items-center justify-center">
+                  <Image
+                    className="w-full h-full object-contain"
+                    src="/infinity.png"
+                    alt="infinity"
+                    width={191}
+                    height={191}
+                  />
+                </div>
+                <p className="text-center">Unlimited invoices</p>
               </li>
             </ul>
           </div>
